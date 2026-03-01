@@ -108,7 +108,7 @@
                         top: 0;
                         left: 0;
                         width: 100%;
-                        background: linear-gradient(90deg, #d32f2f, #f44336);
+                        background: linear-gradient(90deg, #000000, #nohexcodebrroooo);
                         color: white;
                         display: flex;
                         justify-content: center;
@@ -129,13 +129,13 @@
                 `;
                 document.head.appendChild(style);
 
-                // 3. Create Banner HTML (No close button here)
+               
                 const banner = document.createElement('div');
                 banner.id = 'jumpman-notice-banner';
                 banner.innerHTML = `
                     <div class="banner-text">
                         <i class="fas fa-exclamation-triangle"></i>
-                        Jumpman64 will stop receiving updates starting on 3/10/2026
+                        Sh!t I forgot we had a banner
                     </div>
                 `;
                 document.body.appendChild(banner);
@@ -159,7 +159,7 @@
 
             })
             .catch(error => {
-                document.getElementById('status').style.color = 'red';
+                document.getElementById('status').style.color = 'black';
                 document.getElementById('status').innerText = 'Error: ' + error.message;
             });
     </script>
