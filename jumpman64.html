@@ -7,47 +7,38 @@
     <title>Jumpman64</title>
     
     <script>
-        /* INSTANT IFRAME CHECK 
-           If the top window is the same as this window, we are NOT in an iframe.
-        */
-        if (window.top === window.self) {
-            // Hide the body immediately so no content flashes
-            document.documentElement.style.display = 'none';
-            // Trigger redirect
-            window.location.replace("https://sirsnoopy.pages.dev/pleaselaunchinaniframe");
+        /* 1. ROBUST IFRAME CHECK */
+        try {
+            if (window.top === window.self) {
+                document.documentElement.style.display = 'none';
+                window.location.replace("https://sirsnoopy.pages.dev/pleaselaunchinaniframe");
+            }
+        } catch (e) {
+            // If cross-origin prevents checking top, we assume we are in an iframe
+            console.log("Iframe check bypassed due to cross-origin policy.");
         }
     </script>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* 1. INITIAL STYLES */
-        html,
-        body {
+        /* INITIAL STYLES */
+        html, body {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
             overflow: auto;
             background-color: #000;
+            font-family: sans-serif;
         }
 
-        /* Hide scrollbars visually */
-        ::-webkit-scrollbar {
-            display: none;
-        }
+        /* Hide scrollbars */
+        ::-webkit-scrollbar { display: none; }
+        * { scrollbar-width: none; -ms-overflow-style: none; }
 
-        * {
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
-
-        /* 2. LOADING SCREEN */
         #loader-container {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -55,12 +46,10 @@
             background-color: #000;
             z-index: 9999;
             color: white;
-            font-family: sans-serif;
         }
 
         .spinner {
-            width: 40px;
-            height: 40px;
+            width: 40px; height: 40px;
             border: 4px solid rgba(255, 255, 255, 0.1);
             border-top: 4px solid #fff;
             border-radius: 50%;
@@ -69,13 +58,8 @@
         }
 
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -88,98 +72,84 @@
     </div>
 
     <script>
-        // Only run the fetch logic if the redirect didn't happen
-        if (window.top !== window.self) {
-            const baseUrl = 'https://raw.githubusercontent.com/code-andrewy/jumpman64beta/main/index.html';
-            const cacheBuster = '?v=' + Date.now();
-            const url = baseUrl + cacheBuster;
+        (function() {
+            // Ensure we don't run if we're redirecting
+            if (window.top === window.self) return;
 
-            fetch(url, {
-                    cache: "no-store"
-                })
+            const baseUrl = 'https://raw.githubusercontent.com/code-andrewy/jumpman64beta/main/index.html';
+            const url = baseUrl + '?v=' + Date.now();
+
+            fetch(url, { cache: "no-store" })
                 .then(response => {
                     if (!response.ok) throw new Error('Network response was not ok');
                     return response.text();
                 })
                 .then(html => {
+                    // Start writing the new document
                     document.open();
                     document.write(html);
-                    document.close();
-
-                    // --- POST-LOAD LOGIC ---
-
-                    // 1. Inject Font Awesome
-                    const faLink = document.createElement('link');
-                    faLink.rel = 'stylesheet';
-                    faLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css';
-                    document.head.appendChild(faLink);
-
-                    // 2. Banner Styling (Button styles removed)
-                    const style = document.createElement('style');
-                    style.textContent = `
-                        #jumpman-notice-banner {
-                            position: fixed;
-                            top: 0;
-                            left: 0;
-                            width: 100%;
-                            background: linear-gradient(90deg, #000000, #nohexcodebrroooo);
-                            color: white;
-                            display: flex;
-                            justify-content: center;
-                            align-items: center;
-                            padding: 10px 0;
-                            font-family: 'Segoe UI', Roboto, sans-serif;
-                            font-size: 14px;
-                            z-index: 10001;
-                            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-                            transition: all 0.4s ease;
-                        }
-                        #jumpman-notice-banner i { margin-right: 10px; }
-                        .banner-text { text-align: center; font-weight: 600; width: 100%; }
-                        .banner-hidden { transform: translateY(-100%); opacity: 0; pointer-events: none; }
-                        body.has-banner { padding-top: 40px !important; }
-                        ::-webkit-scrollbar { display: none !important; }
-                        * { scrollbar-width: none !important; -ms-overflow-style: none !important; }
-                    `;
-                    document.head.appendChild(style);
-
                     
-                    const banner = document.createElement('div');
-                    banner.id = 'jumpman-notice-banner';
-                    banner.innerHTML = `
-                        <div class="banner-text">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            Sh!t I forgot we had a banner
+                    // Inject Banner Styles and Script INTO the new document
+                    const bannerLogic = `
+                        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+                        <style>
+                            #jumpman-notice-banner {
+                                position: fixed;
+                                top: 0; left: 0; width: 100%;
+                                background: linear-gradient(90deg, #000000, #333333);
+                                color: white;
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                padding: 10px 0;
+                                font-family: 'Segoe UI', Roboto, sans-serif;
+                                font-size: 14px;
+                                z-index: 10001;
+                                box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+                                transition: all 0.4s ease;
+                            }
+                            #jumpman-notice-banner i { margin-right: 10px; }
+                            .banner-text { text-align: center; font-weight: 600; width: 100%; }
+                            .banner-hidden { transform: translateY(-100%); opacity: 0; pointer-events: none; }
+                            body.has-banner { padding-top: 40px !important; }
+                            ::-webkit-scrollbar { display: none !important; }
+                            * { scrollbar-width: none !important; -ms-overflow-style: none !important; }
+                        </style>
+                        <div id="jumpman-notice-banner">
+                            <div class="banner-text">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Press "\`" for a free cookie 🍪
+                            </div>
                         </div>
+                        <script>
+                            (function() {
+                                const banner = document.getElementById('jumpman-notice-banner');
+                                function checkVisibility() {
+                                    const gameIframe = document.querySelector('iframe');
+                                    const isGameActive = !!gameIframe && gameIframe.offsetWidth > 0;
+                                    if (isGameActive) {
+                                        banner.classList.add('banner-hidden');
+                                        document.body.classList.remove('has-banner');
+                                    } else {
+                                        banner.classList.remove('banner-hidden');
+                                        document.body.classList.add('has-banner');
+                                    }
+                                }
+                                setInterval(checkVisibility, 500);
+                            })();
+                        <\/script>
                     `;
-                    document.body.appendChild(banner);
-
-                    // 4. Visibility Logic (Still hides if a game is active, but no manual close)
-                    function checkVisibility() {
-                        const gameIframe = document.querySelector('iframe');
-                        const isGameActive = !!gameIframe && gameIframe.offsetWidth > 0;
-
-                        if (isGameActive) {
-                            banner.classList.add('banner-hidden');
-                            document.body.classList.remove('has-banner');
-                        } else {
-                            banner.classList.remove('banner-hidden');
-                            document.body.classList.add('has-banner');
-                        }
-                    }
-
-                    setInterval(checkVisibility, 500);
-                    checkVisibility();
-
+                    document.write(bannerLogic);
+                    document.close();
                 })
                 .catch(error => {
                     const statusEl = document.getElementById('status');
                     if (statusEl) {
-                        statusEl.style.color = 'white';
+                        statusEl.style.color = '#ff4444';
                         statusEl.innerText = 'Error: ' + error.message;
                     }
                 });
-        }
+        })();
     </script>
 </body>
 
