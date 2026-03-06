@@ -2,7 +2,7 @@
 const qs = (s) => document.querySelector(s);
 
 const CONFIG = {
-  videoID: 'Rz5RM_D_XeI',
+  videoID: '',
   weatherURL: 'https://api.weather.gov/gridpoints/GYX/47,32/forecast/hourly',
   phrases: ["Modern UI", "Web Apps", "Cybersecurity", "JavaScript"]
 };
