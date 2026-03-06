@@ -1,4 +1,3 @@
-
 const qs = (s) => document.querySelector(s);
 const qsa = (s) => Array.from(document.querySelectorAll(s));
 
@@ -13,7 +12,9 @@ const elements = {
   typewriter: qs('#typewriter'),
   time: qs('#time'),
   temp: qs('#temp'),
-  cond: qs('#cond')
+  cond: qs('#cond'),
+  // Target for the new contact icon
+  socialContainer: qs('.social-links') || qs('#tilt-card') 
 };
 
 /* --- 1. MODERN CONTEXT MENU --- */
@@ -77,14 +78,12 @@ const handlePointer = (e) => {
   const x = (e.clientX || e.touches?.[0].clientX) - rect.left;
   const y = (e.clientY || e.touches?.[0].clientY) - rect.top;
   
-  // Update Glow Position
   const px = (x / rect.width) * 100;
   const py = (y / rect.height) * 100;
   elements.glow?.style.setProperty('--mouse-x', `${px}%`);
   elements.glow?.style.setProperty('--mouse-y', `${py}%`);
 
-  // Calculate Rotation
-  state.rotateX = (y - rect.height / 2) / 20; // Increased sensitivity slightly
+  state.rotateX = (y - rect.height / 2) / 20;
   state.rotateY = (rect.width / 2 - x) / 20;
 
   if (!state.raf) state.raf = requestAnimationFrame(updateTilt);
@@ -114,19 +113,16 @@ const showToast = (msg) => {
   setTimeout(() => toast.remove(), 2000);
 };
 
-// Fixed Exploit: Use Modern Clipboard API exclusively
 qsa('.copy-btn').forEach(btn => {
   btn.addEventListener('click', async (e) => {
     e.preventDefault();
     const url = btn.dataset.copyUrl || btn.querySelector('a')?.href;
-    
     if (!url) return showToast("No URL found");
 
     try {
       await navigator.clipboard.writeText(url);
       showToast("Link Copied!");
     } catch (err) {
-      // Secure Fallback
       const input = document.createElement('input');
       input.value = url;
       document.body.appendChild(input);
@@ -153,7 +149,7 @@ const type = () => {
 
   if (!isDeleting && charIdx === currentPhrase.length) {
     isDeleting = true;
-    speed = 2000; // Pause at end
+    speed = 2000;
   } else if (isDeleting && charIdx === 0) {
     isDeleting = false;
     pIdx = (pIdx + 1) % phrases.length;
@@ -166,10 +162,9 @@ const type = () => {
 
 const fetchWeather = async () => {
   try {
-    const res = await fetch('https://api.weather.gov/gridpoints/GYX/47,32/forecast/hourly'); // Modernized endpoint
+    const res = await fetch('https://api.weather.gov/gridpoints/GYX/47,32/forecast/hourly');
     const data = await res.json();
     const current = data.properties.periods[0];
-    
     if (elements.temp) elements.temp.textContent = `${current.temperature}°${current.temperatureUnit}`;
     if (elements.cond) elements.cond.textContent = current.shortForecast;
   } catch (e) {
@@ -189,13 +184,10 @@ window.onYouTubeIframeAPIReady = () => {
 function openVideo() {
   if (!elements.videoModal) return;
   elements.videoModal.style.display = 'flex';
-  
   player = new YT.Player('intro-player', {
     videoId: VIDEO_ID,
     playerVars: { autoplay: 1, modestbranding: 1, rel: 0 },
-    events: {
-      onStateChange: (e) => { if (e.data === 0) closeVideo(); }
-    }
+    events: { onStateChange: (e) => { if (e.data === 0) closeVideo(); } }
   });
 }
 
@@ -207,12 +199,59 @@ function closeVideo() {
 
 qs('#video-close')?.addEventListener('click', closeVideo);
 
+/* --- 7. FULL JS CONTACT ICON --- */
+const injectContactIcon = () => {
+  // Create Style
+  const style = document.createElement('style');
+  style.textContent = `
+    .contact-btn-js {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      color: white;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin: 8px;
+      cursor: pointer;
+    }
+    .contact-btn-js:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-3px);
+      border-color: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+    }
+  `;
+  document.head.appendChild(style);
+
+  // Create Element
+  const contactBtn = document.createElement('a');
+  contactBtn.href = 'https://sirsnoopy.pages.dev/contact';
+  contactBtn.className = 'contact-btn-js';
+  contactBtn.target = '_blank';
+  contactBtn.innerHTML = `
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+      <polyline points="22,6 12,13 2,6"></polyline>
+    </svg>
+  `;
+
+  elements.socialContainer?.appendChild(contactBtn);
+};
+
 /* --- INITIALIZATION --- */
 document.addEventListener('DOMContentLoaded', () => {
   type();
   fetchWeather();
+  injectContactIcon(); // Injecting the new contact button
+  
   setInterval(() => {
-    elements.time.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    if(elements.time) {
+      elements.time.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
   }, 1000);
 });
 
