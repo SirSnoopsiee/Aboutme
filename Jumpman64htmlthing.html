@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jumpman64 | Auto-Updater</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --blue: #00d2ff;
+            --glass: rgba(15, 20, 35, 0.85);
+            --bg-fallback: url('https://raw.githubusercontent.com/code-andrewy/jumpman64beta/refs/heads/main/charlie-brown-snoopy-stargazing-desktop-wallpaper-preview.jpg');
+        }
+
+        body, html {
+            margin: 0; padding: 0; height: 100%; width: 100%;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), var(--bg-fallback);
+            background-size: cover; background-position: center;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: white; overflow: hidden;
+        }
+
+        .loader-container { text-align: center; transition: opacity 0.5s ease; }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid var(--blue);
+            border-radius: 50%; width: 40px; height: 40px;
+            animation: spin 1s linear infinite; margin: 0 auto 20px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        #game-view {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            border: none; display: none; background: #000;
+        }
+
+        h2 { font-weight: 800; letter-spacing: -0.5px; margin-bottom: 5px; }
+        p { opacity: 0.7; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <div id="loading-ui" class="loader-container">
+        <div class="spinner"></div>
+        <h2>Checking for Updates...</h2>
+        <p>Fetching the latest Jumpman64 build</p>
+    </div>
+
+    <iframe id="game-view" sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock"></iframe>
+
+    <script>
+        const UPDATE_URL = "https://raw.githubusercontent.com/code-andrewy/Jumpman64-portal/refs/heads/main/html-version.html";
+        const ASSET_BASE = "https://raw.githubusercontent.com/code-andrewy/Jumpman64-portal/main/";
+
+        async function fetchUpdate() {
+            const loader = document.getElementById('loading-ui');
+            const iframe = document.getElementById('game-view');
+
+            try {
+                // Fetch the latest version from GitHub
+                const response = await fetch(UPDATE_URL, { cache: "no-store" }); // "no-store" forces it to bypass browser cache
+                if (!response.ok) throw new Error("Update failed");
+
+                let htmlContent = await response.text();
+
+                // Inject <base> tag so relative images/scripts inside your GitHub HTML work correctly
+                const baseTag = `<base href="${ASSET_BASE}">`;
+                if (htmlContent.includes('<head>')) {
+                    htmlContent = htmlContent.replace('<head>', `<head>${baseTag}`);
+                } else {
+                    htmlContent = baseTag + htmlContent;
+                }
+
+                // Push content to the iframe
+                const doc = iframe.contentWindow.document;
+                doc.open();
+                doc.write(htmlContent);
+                doc.close();
+
+                // Swap UI
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    iframe.style.display = 'block';
+                }, 500);
+
+            } catch (err) {
+                console.error(err);
+                document.querySelector('h2').innerText = "Update Error";
+                document.querySelector('p').innerText = "Please check your internet connection.";
+            }
+        }
+
+        // Run as soon as page loads
+        window.onload = fetchUpdate;
+    </script>
+</body>
+</html>
