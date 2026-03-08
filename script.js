@@ -68,7 +68,7 @@ function start() {
     if(!el.socialRow) return
 
     const links = [
-      {icon:"fab fa-youtube",url:"https://youtube.com/@sirsnoopy",tip:"YouTube"},
+      {icon:"fab fa-youtube",url:"https://www.youtube.com/@SirSnoopsiee",tip:"YouTube"},
       {icon:"fab fa-github",url:"https://github.com/code-andrewy",tip:"GitHub"},
       {icon:"fas fa-envelope",url:"https://sirsnoopy.pages.dev/contact",tip:"Contact"}
     ]
