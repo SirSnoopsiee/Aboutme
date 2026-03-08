@@ -8,7 +8,6 @@
     <style>
         :root {
             --blue: #00d2ff;
-            --yellow: #ffd700; 
             --glass: rgba(15, 20, 35, 0.85);
             --border: rgba(255, 255, 255, 0.12);
             --text: #ffffff;
@@ -22,74 +21,63 @@
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), var(--bg-fallback);
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
+            background-size: cover; background-position: center; background-attachment: fixed;
             display: flex; align-items: center; justify-content: center;
-            min-height: 100vh; padding: 20px; color: var(--text);
+            min-height: 100vh; padding: 20px; color: var(--text); overflow-x: hidden;
         }
 
         .card {
-            background: var(--glass);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid var(--border);
-            border-radius: 32px;
-            padding: 40px;
-            width: 100%;
-            max-width: 450px;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
-            text-align: center;
+            background: var(--glass); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--border); border-radius: 32px;
+            padding: 40px; width: 100%; max-width: 450px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5); text-align: center;
             animation: appear 0.6s var(--smooth-bounce);
         }
 
         h2 { font-weight: 800; margin-bottom: 8px; letter-spacing: -1px; }
         p { color: var(--muted); font-size: 0.9rem; margin-bottom: 25px; }
 
-        .input-group { text-align: left; margin-bottom: 18px; position: relative; }
-        
-        label { 
-            font-size: 0.65rem; font-weight: 800; color: var(--blue); 
-            text-transform: uppercase; letter-spacing: 1.5px; 
-            margin-left: 12px; margin-bottom: 6px; display: block;
-        }
+        .input-group { text-align: left; margin-bottom: 18px; }
+        label { font-size: 0.65rem; font-weight: 800; color: var(--blue); text-transform: uppercase; letter-spacing: 1.5px; margin-left: 12px; margin-bottom: 6px; display: block; }
 
         input, textarea {
-            width: 100%; padding: 14px 18px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            color: white; font-family: inherit; transition: 0.3s;
+            width: 100%; padding: 14px 18px; background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border); border-radius: 16px;
+            color: white; font-family: inherit; transition: 0.3s; resize: none;
         }
 
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: var(--blue);
-            background: rgba(0, 0, 0, 0.5);
-            box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
+        input:focus, textarea:focus { outline: none; border-color: var(--blue); background: rgba(0, 0, 0, 0.5); }
+
+        /* Captcha Hidden by default */
+        #captchaSection {
+            background: rgba(255, 0, 0, 0.1); padding: 15px; border-radius: 16px;
+            margin-bottom: 20px; border: 1px dashed #ff4b2b;
+            display: none; flex-direction: column; align-items: center;
+            animation: appear 0.3s ease;
+        }
+        .captcha-label { font-size: 0.75rem; font-weight: 800; margin-bottom: 8px; color: #ff4b2b; }
+        #captchaInput { width: 100px; text-align: center; font-weight: 800; border-color: #ff4b2b; }
+
+        .toast {
+            position: fixed; top: 20px; background: #ff4b2b; color: white;
+            padding: 12px 24px; border-radius: 12px; font-weight: 800;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 9999;
+            animation: slideDown 0.4s var(--smooth-bounce);
         }
 
         button {
-            width: 100%; padding: 16px;
-            background: var(--blue); color: #0f1423;
-            border: none; border-radius: 16px;
-            font-weight: 800; cursor: pointer;
+            width: 100%; padding: 16px; background: var(--blue); color: #0f1423;
+            border: none; border-radius: 16px; font-weight: 800; cursor: pointer;
             transition: 0.4s var(--smooth-bounce);
         }
 
-        button:hover:not(:disabled) {
-            transform: scale(1.02);
-            box-shadow: 0 10px 20px rgba(0, 210, 255, 0.3);
-        }
-
+        button:hover:not(:disabled) { transform: scale(1.02); }
         button:disabled { background: #444; color: #888; cursor: not-allowed; }
 
         .hidden { display: none; }
 
-        @keyframes appear {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes appear { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideDown { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
     </style>
 </head>
 <body>
@@ -100,12 +88,11 @@
 
     <form id="contactForm" action="https://formsubmit.co/sirsnoopsiee@proton.me" method="POST">
         <input type="text" name="_honey" class="hidden">
-        <input type="hidden" name="_captcha" value="true">
-        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_captcha" value="false">
         
         <div class="input-group">
             <label>Name</label>
-            <input type="text" name="name" id="name" placeholder="Your name here" required>
+            <input type="text" name="name" id="name" placeholder="Your name" required>
         </div>
 
         <div class="input-group">
@@ -115,7 +102,12 @@
 
         <div class="input-group">
             <label>Message</label>
-            <textarea name="message" id="message" rows="4" placeholder="Your message here..." required></textarea>
+            <textarea name="message" id="message" rows="4" maxlength="500" placeholder="Your message..." required></textarea>
+        </div>
+
+        <div id="captchaSection">
+            <label class="captcha-label" id="captchaLabel">SUSPECTED BOT: Solve to continue</label>
+            <input type="number" id="captchaInput" placeholder="Ans">
         </div>
 
         <button type="submit" id="submitBtn">Send it!</button>
@@ -125,28 +117,86 @@
 <script>
     const form = document.getElementById('contactForm');
     const btn = document.getElementById('submitBtn');
+    const captchaSection = document.getElementById('captchaSection');
+    const captchaInput = document.getElementById('captchaInput');
+    const captchaLabel = document.getElementById('captchaLabel');
+
+    let startTime = null;
+    let isSus = false;
+    let captchaAnswer;
+
+    // Start timer when user interacts
+    document.addEventListener('mousedown', () => { if(!startTime) startTime = Date.now(); }, {once: true});
+    document.addEventListener('keydown', () => { if(!startTime) startTime = Date.now(); }, {once: true});
+
+    function setCookie(n, v, d) {
+        const date = new Date(); date.setTime(date.getTime() + (d*24*60*60*1000));
+        document.cookie = `${n}=${v};expires=${date.toUTCString()};path=/;SameSite=Strict`;
+    }
+
+    function getCookie(n) {
+        let name = n + "=";
+        let ca = document.cookie.split(';');
+        for(let i=0; i<ca.length; i++) {
+            let c = ca[i].trim();
+            if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+        }
+        return "";
+    }
+
+    function showPopup(msg) {
+        const t = document.createElement('div'); t.className = 'toast'; t.innerText = msg;
+        document.body.appendChild(t); setTimeout(() => t.remove(), 4000);
+    }
+
+    function generateCaptcha() {
+        const n1 = Math.floor(Math.random() * 10) + 2;
+        const n2 = Math.floor(Math.random() * 10) + 2;
+        captchaAnswer = n1 + n2;
+        captchaLabel.innerText = `SUSPECTED BOT: What is ${n1} + ${n2}?`;
+        captchaSection.style.display = 'flex';
+        isSus = true;
+    }
+
+    window.onload = () => {
+        document.getElementById('name').value = getCookie("u_name");
+        document.getElementById('email').value = getCookie("u_email");
+    };
 
     form.addEventListener('submit', (e) => {
-        const name = document.getElementById('name').value.trim();
-        const email = document.getElementById('email').value.trim();
-        const msg = document.getElementById('message').value.trim();
+        const now = Date.now();
+        const timeTaken = (now - startTime) / 1000;
+        const lastSent = getCookie("last_sent");
 
-        // 1. NO BLANK FORMS: Check if fields are just spaces
-        if (!name || !email || !msg) {
+        // 1. Rate Limit
+        if (lastSent && (now - lastSent < 20000)) {
             e.preventDefault();
-            alert("Please fill out all fields.");
+            showPopup(`Wait ${Math.ceil((60000-(now-lastSent))/1000)}s before sending again.`);
             return;
         }
 
-        
-        const checkPattern = /<[^>]*>|javascript:/gi;
-        if (checkPattern.test(name) || checkPattern.test(msg)) {
+        // 2. "Sus" Check (Filled under 1.5 seconds)
+        if (!isSus && timeTaken < 1.5) {
             e.preventDefault();
-            alert("Naughty Naughty");
+            generateCaptcha();
+            showPopup("You're moving a bit too fast! Solve this.");
             return;
         }
 
-    
+        // 3. Captcha Validation (If it's visible)
+        if (isSus) {
+            if (parseInt(captchaInput.value) !== captchaAnswer) {
+                e.preventDefault();
+                showPopup("Wrong answer! Are you sped?");
+                generateCaptcha();
+                return;
+            }
+        }
+
+        // Success: Save and Send
+        setCookie("u_name", document.getElementById('name').value, 30);
+        setCookie("u_email", document.getElementById('email').value, 30);
+        setCookie("last_sent", Date.now(), 1);
         btn.disabled = true;
         btn.innerText = "Sending...";
     });
