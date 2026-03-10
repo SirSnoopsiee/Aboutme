@@ -1,7 +1,7 @@
 const $ = s => document.querySelector(s);
 
 const CONFIG = {
-  // Weather.gov requires a User-Agent header or it will block the request
+  // Weather.gov requires a User-Agent header or it will return a 403 error
   weatherURL: "https://api.weather.gov/gridpoints/GYX/47,32/forecast/hourly",
   phrases: ["Modern UI", "Web Apps", "Cybersecurity", "JavaScript"]
 };
@@ -18,8 +18,7 @@ function start() {
     glow: $("#glow")
   };
 
-  // --- 1. Weather Logic ---
-  // Added User-Agent header to prevent 403 Forbidden errors
+  // --- 1. Weather Fetching ---
   function weather() {
     fetch(CONFIG.weatherURL, {
       headers: { 'User-Agent': 'Mozilla/5.0 (ProfilePage)' }
@@ -36,9 +35,8 @@ function start() {
       });
   }
 
-  // --- 2. Typewriter Logic ---
+  // --- 2. Typewriter Effect ---
   let p = 0, c = 0, isDeleting = false;
-
   function type() {
     if (!el.typewriter) return;
     const phrase = CONFIG.phrases[p] || "";
@@ -65,25 +63,29 @@ function start() {
     }
   }
 
-  // --- 3. Socials Logic ---
-  // Updated to modern FontAwesome 6 classes (fa-brands)
+  // --- 3. Social Icons (Fixed classes for your CSS) ---
   function socials() {
     if (!el.socialRow) return;
 
     const links = [
-      { icon: "fa-brands fa-github", url: "https://github.com/code-andrewy", tip: "GitHub" },
-      { icon: "fa-brands fa-youtube", url: "https://www.youtube.com/@SirSnoopsiee", tip: "YouTube" },
-      { icon: "fa-brands fa-discord", url: "https://discord.com/users/1478125540828385350", tip: "Discord" }
+      { key: "youtube", icon: "fa-brands fa-youtube", url: "https://www.youtube.com/@SirSnoopsiee", tip: "YouTube" },
+      { key: "github", icon: "fa-brands fa-github", url: "https://github.com/code-andrewy", tip: "GitHub" },
+      { key: "contact", icon: "fa-solid fa-envelope", url: "https://sirsnoopy.pages.dev/contact", tip: "Contact" }
     ];
 
     el.socialRow.innerHTML = links.map(l =>
-      `<a href="${l.url}" target="_blank" rel="noopener" class="social-btn" aria-label="${l.tip}">
+      `<a href="${l.url}" 
+          target="_blank" 
+          rel="noopener" 
+          class="social-btn ${l.key}" 
+          data-tooltip="${l.tip}" 
+          aria-label="${l.tip}">
         <i class="${l.icon}"></i>
       </a>`
     ).join("");
   }
 
-  // --- 4. Clock Logic ---
+  // --- 4. Digital Clock ---
   function clock() {
     if (el.time) {
       el.time.textContent = new Date().toLocaleTimeString([], {
@@ -93,7 +95,7 @@ function start() {
     }
   }
 
-  // --- 5. Tilt & Glow Logic ---
+  // --- 5. 3D Tilt & Glow ---
   
   el.container?.addEventListener("pointermove", e => {
     if (!el.card || window.innerWidth <= 768) return;
@@ -102,16 +104,16 @@ function start() {
     const x = e.clientX - r.left;
     const y = e.clientY - r.top;
 
-    // Set mouse position for the CSS radial-gradient glow
+    // Updates the CSS --mouse-x and --mouse-y for your .card-glow
     el.glow?.style.setProperty("--mouse-x", `${(x / r.width) * 100}%`);
     el.glow?.style.setProperty("--mouse-y", `${(y / r.height) * 100}%`);
 
-    // Natural tilt: centers at 0, rotates ~15deg at edges
     const centerX = r.width / 2;
     const centerY = r.height / 2;
     const rotateX = (centerY - y) / 15; 
     const rotateY = (x - centerX) / 15;
 
+    // perspective(1000px) is required for the 3D look
     el.card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
   });
 
@@ -119,7 +121,7 @@ function start() {
     if (el.card) el.card.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg)";
   });
 
-  // Initialization
+  // Start everything
   clock();
   setInterval(clock, 1000);
   type();
