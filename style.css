@@ -1,8 +1,8 @@
 /* Stop looking at my code me don't like that! :( */
 :root {
   --accent-blue: #00d2ff;
-  --accent-green: #366136; /* Breaking Bad Green */
   --accent-yellow: #ffd700;
+  --accent-green: #366136; /* Breaking Bad Green */
   --glass: rgba(15, 20, 35, 0.72);
   --border: rgba(255, 255, 255, 0.12);
   --text: #ffffff;
@@ -27,7 +27,7 @@ html, body {
   font-family: 'Plus Jakarta Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
   color: var(--text);
-  background: linear-gradient(rgba(0,0,0,.5), rgba(0,0,0,.5)), var(--bg-fallback);
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), var(--bg-fallback);
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -42,7 +42,7 @@ body {
   padding: 20px;
 }
 
-/* --- Background & Overlays --- */
+/* Background Layers */
 #bg-video {
   position: fixed;
   inset: 0;
@@ -56,18 +56,18 @@ body {
 #bg-overlay {
   position: fixed;
   inset: 0;
-  background: linear-gradient(rgba(0,0,0,.4), rgba(0,0,0,.6));
+  background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6));
   z-index: -1;
   pointer-events: none;
 }
 
-/* --- The Card --- */
+/* The Glass Card */
 .container {
   width: 100%;
   max-width: var(--max-width);
   perspective: 2000px;
   z-index: 2;
-  animation: cardAppear .85s var(--ease-smooth);
+  animation: cardAppear 0.85s var(--ease-smooth);
 }
 
 .card {
@@ -81,22 +81,23 @@ body {
   gap: clamp(24px, 4vw, 48px);
   backdrop-filter: blur(var(--glass-blur)) saturate(180%);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
-  box-shadow: 0 45px 100px rgba(0,0,0,.65);
+  box-shadow: 0 45px 100px rgba(0, 0, 0, 0.65);
   transform-style: preserve-3d;
   position: relative;
   isolation: isolate;
 }
 
+/* Mouse Glow Effect */
 .card-glow {
   position: absolute;
   inset: -1px;
   border-radius: inherit;
   pointer-events: none;
   z-index: 1;
-  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255,255,255,.12), transparent 45%);
+  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.12), transparent 45%);
 }
 
-/* --- Profile Section --- */
+/* Profile Section */
 .profile-section {
   display: flex;
   flex-direction: column;
@@ -111,15 +112,30 @@ body {
   background: var(--accent-yellow);
   border-radius: 50%;
   padding: 6px;
-  box-shadow: 0 15px 40px rgba(0,0,0,.4);
-  transition: transform .5s var(--ease-bouncy);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+  transition: transform 0.5s var(--ease-bouncy);
 }
 
-.pfp-outer:hover { transform: scale(1.05) rotate(2deg); }
-.pfp-inner { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; border: 4px solid rgba(0,0,0,.2); }
-.pfp-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pfp-outer:hover {
+  transform: scale(1.05) rotate(2deg);
+}
 
-/* --- Social Icons --- */
+.pfp-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid rgba(0, 0, 0, 0.2);
+}
+
+.pfp-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Social Icons */
 .social-row {
   display: flex;
   gap: 12px;
@@ -132,18 +148,26 @@ body {
   width: 52px;
   height: 52px;
   border-radius: 14px;
-  background: rgba(255,255,255,.08);
+  background: rgba(255, 255, 255, 0.08);
   border: 1px solid var(--border);
   color: var(--text);
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  font-size: 1.25rem;
   text-decoration: none;
-  transition: all .28s var(--ease-smooth);
+  transition: all 0.28s var(--ease-smooth);
   position: relative;
 }
 
-.social-btn:hover { transform: translateY(-8px); }
+.social-btn:hover {
+  transform: translateY(-8px);
+}
+
+/* Hover Colors for Specific Icons */
+.social-btn.youtube:hover { background: #ff0000; border-color: #ff0000; box-shadow: 0 8px 20px rgba(255, 0, 0, 0.3); }
+.social-btn.github:hover { background: #333; border-color: #666; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4); }
+.social-btn.contact:hover { background: var(--accent-blue); border-color: var(--accent-blue); box-shadow: 0 8px 20px rgba(0, 210, 255, 0.3); }
 
 /* Tooltips */
 .social-btn::after {
@@ -152,30 +176,53 @@ body {
   bottom: -44px;
   left: 50%;
   transform: translateX(-50%) translateY(10px);
-  background: rgba(0,0,0,.9);
+  background: rgba(0, 0, 0, 0.9);
   padding: 6px 12px;
   border-radius: 8px;
   font-size: 12px;
   opacity: 0;
   pointer-events: none;
-  transition: all .25s var(--ease-smooth);
+  transition: all 0.25s var(--ease-smooth);
   white-space: nowrap;
+  z-index: 1000;
 }
 
-.social-btn:hover::after { opacity: 1; transform: translateX(-50%) translateY(0); }
+.social-btn:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 
-/* Brands */
-.social-btn.youtube:hover { background: #ff0000; border-color: #ff0000; box-shadow: 0 8px 20px rgba(255,0,0,.3); }
-.social-btn.github:hover { background: #333; border-color: #666; box-shadow: 0 8px 20px rgba(0,0,0,.4); }
-.social-btn.contact:hover { background: var(--accent-blue); border-color: var(--accent-blue); box-shadow: 0 8px 20px rgba(0,210,255,.3); }
+/* Content & Breaking Bad Logo */
+.content-section {
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
 
-/* --- Content & Logo --- */
-.content-section { z-index: 2; display: flex; flex-direction: column; gap: 24px; }
+.greeting {
+  color: var(--accent-blue);
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  font-weight: 800;
+  font-size: 0.75rem;
+}
 
-.greeting { color: var(--accent-blue); text-transform: uppercase; letter-spacing: 4px; font-weight: 800; font-size: .75rem; }
+.name-logo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
 
-/* The Breaking Bad Elements */
-.logo-row { display: flex; align-items: center; gap: 10px; font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; color: #fff; line-height: 1; }
+.logo-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+}
 
 .element-box {
   background: var(--accent-green);
@@ -186,7 +233,7 @@ body {
   align-items: center;
   justify-content: center;
   position: relative;
-  box-shadow: 0 10px 20px rgba(0,0,0,.3);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
 }
 
 .element-box small {
@@ -197,46 +244,78 @@ body {
   opacity: 0.9;
 }
 
-.logo-text { font-family: 'Times New Roman', serif; letter-spacing: -2px; }
+.logo-text {
+  font-family: 'Times New Roman', serif;
+  letter-spacing: -2px;
+}
 
-/* --- Typewriter & Bio --- */
-.typewriter-wrap { font-size: clamp(1.1rem, 2.8vw, 1.85rem); font-weight: 700; min-height: 1.5em; }
-#typewriter { color: var(--accent-blue); border-right: 2px solid var(--accent-blue); padding-right: 5px; animation: blink .7s infinite; }
+/* Typewriter */
+.typewriter-wrap {
+  font-size: clamp(1.1rem, 2.8vw, 1.85rem);
+  font-weight: 700;
+  min-height: 1.5em;
+}
+
+#typewriter {
+  color: var(--accent-blue);
+  border-right: 2px solid var(--accent-blue);
+  padding-right: 5px;
+  animation: blink 0.7s infinite;
+}
 
 .bio {
   color: var(--muted);
   font-size: 1.05rem;
   line-height: 1.7;
-  background: rgba(0,0,0,.25);
+  background: rgba(0, 0, 0, 0.25);
   padding: 20px 24px;
   border-radius: 22px;
-  border: 1px solid rgba(255,255,255,.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* --- Info Grid (Weather/Time) --- */
-.info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+/* Time & Weather Grid */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
 
 .stat-box {
-  background: rgba(255,255,255,.05);
+  background: rgba(255, 255, 255, 0.05);
   padding: 16px;
   border-radius: 18px;
   border: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   gap: 4px;
-  transition: background .2s;
+  transition: background 0.2s;
 }
 
-.stat-box:hover { background: rgba(255,255,255,.08); }
-.stat-box i { color: var(--accent-blue); font-size: 1.2rem; margin-bottom: 4px; }
-.stat-box span { font-weight: 700; font-size: 1.1rem; }
-.stat-box small { color: var(--muted); font-size: 0.8rem; }
+.stat-box:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
 
-/* --- Animations --- */
+.stat-box i {
+  color: var(--accent-blue);
+  font-size: 1.2rem;
+  margin-bottom: 4px;
+}
+
+.stat-box span {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.stat-box small {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+/* Animations */
 @keyframes cardAppear { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes blink { 50% { border-color: transparent; } }
 
-/* --- Responsiveness --- */
+/* Responsive Layout */
 @media (min-width: 850px) {
   .card { grid-template-columns: 320px 1fr; align-items: center; gap: 50px; }
   .profile-section { border-right: 1px solid var(--border); padding-right: 50px; }
@@ -246,5 +325,6 @@ body {
 @media (max-width: 600px) {
   .card { padding: 24px; border-radius: 30px; }
   .profile-section { border-right: none; border-bottom: 1px solid var(--border); padding-bottom: 24px; }
-  .element-box { width: 60px; height: 60px; font-size: 2.5rem; }
+  .element-box { width: 55px; height: 55px; font-size: 2rem; }
+  .element-box small { font-size: 0.6rem; }
 }
