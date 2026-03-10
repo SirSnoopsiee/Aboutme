@@ -1,8 +1,9 @@
 const $ = s => document.querySelector(s);
 
 const CONFIG = {
+  // Using specific coordinates for Pittsfield/Concord area weather
   weatherURL: "https://api.weather.gov/gridpoints/GYX/47,32/forecast/hourly",
-  phrases: ["Modern UI", "Web Apps", "Cybersecurity", "JavaScript"]
+  phrases: ["Modern UI", "Web Apps", "Cybersecurity", "JavaScript", "Rust & Wasm"]
 };
 
 function start() {
@@ -17,22 +18,25 @@ function start() {
     glow: $("#glow")
   };
 
-  // 1. Weather - Added a safety net so errors don't stop the whole script
+  // --- 1. Weather (Fixed with User-Agent & Error Handling) ---
   function weather() {
-    fetch(CONFIG.weatherURL, { headers: { 'User-Agent': 'SirsnoopyProfile' } })
+    fetch(CONFIG.weatherURL, { 
+      headers: { 'User-Agent': 'SirsnoopyProfile/1.0' } 
+    })
       .then(r => r.ok ? r.json() : null)
       .then(data => {
         const cur = data?.properties?.periods?.[0];
-        if (el.temp) el.temp.textContent = cur ? `${cur.temperature}°F` : "72°F";
-        if (el.cond) el.cond.textContent = cur ? cur.shortForecast : "Clear";
+        if (el.temp) el.temp.textContent = cur ? `${cur.temperature}°F` : "53°F";
+        if (el.cond) el.cond.textContent = cur ? cur.shortForecast : "Sunny";
       })
       .catch(() => {
-        if (el.temp) el.temp.textContent = "72°F";
-        if (el.cond) el.cond.textContent = "Clear";
+        // Fallback values so the UI never looks broken
+        if (el.temp) el.temp.textContent = "53°F";
+        if (el.cond) el.cond.textContent = "Clear Skies";
       });
   }
 
-  // 2. Typewriter Effect
+  // --- 2. Typewriter (Smooth Logic) ---
   let p = 0, c = 0, isDeleting = false;
   function type() {
     if (!el.typewriter) return;
@@ -60,15 +64,14 @@ function start() {
     }
   }
 
-  // 3. Social Icons - This is where your bug was
-  // I simplified this to ensure the class matches your CSS (.social-btn.youtube, etc)
+  // --- 3. Social Icons (Fixed CSS Class Mapping) ---
   function socials() {
     if (!el.socialRow) return;
 
     const links = [
       { key: "youtube", icon: "fa-brands fa-youtube", url: "https://www.youtube.com/@SirSnoopsiee", tip: "YouTube" },
       { key: "github", icon: "fa-brands fa-github", url: "https://github.com/code-andrewy", tip: "GitHub" },
-      { key: "contact", icon: "fa-solid fa-envelope", url: "https://sirsnoopy.pages.dev/contact", tip: "Contact" }
+      { key: "contact", icon: "fa-solid fa-envelope", url: "https://sirsnoopy.pages.dev/contact", tip: "Email Me" }
     ];
 
     el.socialRow.innerHTML = links.map(l =>
@@ -83,7 +86,7 @@ function start() {
     ).join("");
   }
 
-  // 4. Clock
+  // --- 4. Clock (Real-time Update) ---
   function clock() {
     if (el.time) {
       el.time.textContent = new Date().toLocaleTimeString([], {
@@ -93,7 +96,8 @@ function start() {
     }
   }
 
-  // 5. 3D Tilt & Glow
+  // --- 5. 3D Tilt & Glow (Optimized for Glassmorphism) ---
+  
   el.container?.addEventListener("pointermove", e => {
     if (!el.card || window.innerWidth <= 768) return;
 
@@ -101,23 +105,23 @@ function start() {
     const x = e.clientX - r.left;
     const y = e.clientY - r.top;
 
+    // Updates the mouse position for the CSS radial-gradient
     el.glow?.style.setProperty("--mouse-x", `${(x / r.width) * 100}%`);
     el.glow?.style.setProperty("--mouse-y", `${(y / r.height) * 100}%`);
 
     const centerX = r.width / 2;
     const centerY = r.height / 2;
-    const rotateX = (centerY - y) / 20; 
-    const rotateY = (x - centerX) / 20;
+    const rotateX = (centerY - y) / 25; // Gentler tilt
+    const rotateY = (x - centerX) / 25;
 
-    // Added perspective directly to the style
-    el.card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    el.card.style.transform = `perspective(2000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
   });
 
   el.container?.addEventListener("pointerleave", () => {
-    if (el.card) el.card.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg)";
+    if (el.card) el.card.style.transform = "perspective(2000px) rotateX(0deg) rotateY(0deg)";
   });
 
-  // Start all processes
+  // Run all functions
   clock();
   setInterval(clock, 1000);
   type();
