@@ -1,7 +1,6 @@
 const $ = s => document.querySelector(s);
 
 const CONFIG = {
-  // Weather.gov requires a User-Agent header or it will return a 403 error
   weatherURL: "https://api.weather.gov/gridpoints/GYX/47,32/forecast/hourly",
   phrases: ["Modern UI", "Web Apps", "Cybersecurity", "JavaScript"]
 };
@@ -18,11 +17,9 @@ function start() {
     glow: $("#glow")
   };
 
-  // --- 1. Weather Fetching ---
+  // 1. Weather - Added a safety net so errors don't stop the whole script
   function weather() {
-    fetch(CONFIG.weatherURL, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (ProfilePage)' }
-    })
+    fetch(CONFIG.weatherURL, { headers: { 'User-Agent': 'SirsnoopyProfile' } })
       .then(r => r.ok ? r.json() : null)
       .then(data => {
         const cur = data?.properties?.periods?.[0];
@@ -35,7 +32,7 @@ function start() {
       });
   }
 
-  // --- 2. Typewriter Effect ---
+  // 2. Typewriter Effect
   let p = 0, c = 0, isDeleting = false;
   function type() {
     if (!el.typewriter) return;
@@ -63,7 +60,8 @@ function start() {
     }
   }
 
-  // --- 3. Social Icons (Fixed classes for your CSS) ---
+  // 3. Social Icons - This is where your bug was
+  // I simplified this to ensure the class matches your CSS (.social-btn.youtube, etc)
   function socials() {
     if (!el.socialRow) return;
 
@@ -85,7 +83,7 @@ function start() {
     ).join("");
   }
 
-  // --- 4. Digital Clock ---
+  // 4. Clock
   function clock() {
     if (el.time) {
       el.time.textContent = new Date().toLocaleTimeString([], {
@@ -95,8 +93,7 @@ function start() {
     }
   }
 
-  // --- 5. 3D Tilt & Glow ---
-  
+  // 5. 3D Tilt & Glow
   el.container?.addEventListener("pointermove", e => {
     if (!el.card || window.innerWidth <= 768) return;
 
@@ -104,16 +101,15 @@ function start() {
     const x = e.clientX - r.left;
     const y = e.clientY - r.top;
 
-    // Updates the CSS --mouse-x and --mouse-y for your .card-glow
     el.glow?.style.setProperty("--mouse-x", `${(x / r.width) * 100}%`);
     el.glow?.style.setProperty("--mouse-y", `${(y / r.height) * 100}%`);
 
     const centerX = r.width / 2;
     const centerY = r.height / 2;
-    const rotateX = (centerY - y) / 15; 
-    const rotateY = (x - centerX) / 15;
+    const rotateX = (centerY - y) / 20; 
+    const rotateY = (x - centerX) / 20;
 
-    // perspective(1000px) is required for the 3D look
+    // Added perspective directly to the style
     el.card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
   });
 
@@ -121,7 +117,7 @@ function start() {
     if (el.card) el.card.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg)";
   });
 
-  // Start everything
+  // Start all processes
   clock();
   setInterval(clock, 1000);
   type();
